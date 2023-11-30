@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mask Detection</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #343a40;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 10px;
+            border-radius: 5px;
+            background-color: #007bff;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e8edf2;
+            margin-top: 20px;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            border: 2px solid #007bff;
+        }
+
+        #image-preview {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Mask Detection</h1>
+    </header>
+
+
+    <div class="container">
+        <section id="about">
+            <h2>About Mask Detection</h2>
+            <p>Welcome to Mask Detection, a simple web application that uses machine learning to determine whether a person in an image is wearing a mask or not.</p>
+            <p>Click the button below to choose an image to upload and analyze.</p>
+            <p>Accuracy is 97.5%</p>
+        </section>
+
+        <section id="result">
+            <h2>Result</h2>
+            <p id="result-text">Prediction: Result</p>
+        </section>
+
+        <section id="image-preview">
+            <h2>Image Preview</h2>
+            <img id="uploaded-image" alt="Uploaded Image">
+        </section>
+
+        <section id="upload">
+            <label for="file-input">Choose an image</label>
+            <input type="file" id="file-input" accept="image/*">
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('file-input').addEventListener('change', handleImageUpload);
+
+        async function handleImageUpload(event) {
+            event.preventDefault();  // Prevent the default form submission behavior
+
+            const file = event.target.files[0];
+
+            if (file) {
+                // Display the uploaded image
+                const imgPreview = document.getElementById('uploaded-image');
+                imgPreview.src = URL.createObjectURL(file);
+                imgPreview.style.display = 'block';
+
+                // Send the image to the server for prediction
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Update the URL to match your backend endpoint
+                const backendURL = 'http://127.0.0.1:5000';  // Replace with your backend URL
+
+                try {
+                    const response = await fetch(backendURL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    const resultText = document.getElementById('result-text');
+                    resultText.textContent = `Prediction: ${data.result}`;
+
+                    // Display the result
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.display = 'block';
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
